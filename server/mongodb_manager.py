@@ -11,10 +11,10 @@ class MongoDBManager():
 
     def create_new_device(self, device_metadata):
         '''
-        :param device_metadata: device metadata
+        create new device
+        :param device_metadata: (type, id, value, location_id, position_x, position_y)
         :type device_metadata: tuple
-        (type, id, value, location_id, position_x, position_y)
-        :return:
+        :return: ObjectId
         '''
         return self._db.devices.insert_one(
             {
@@ -27,10 +27,29 @@ class MongoDBManager():
             }
         )
 
-    def test(self):
-        collection = self._db.devices
-        for post in collection.find():
-            print(post)
+    def update_device_value_status(self, device_metadata):
+        '''
+        update value for some device
+        :param device_metadata: device_metadata = (id, value)
+        :type device_metadata: tuple
+        :return: document
+        '''
+        return self._db.devices.update_one(
+            {'id': device_metadata[0]},
+            {
+                '$set': {'value': device_metadata[1]}
+            }
+        )
 
+    def delete_device(self, device_id):
+        '''
+        delete device
+        :param device_id: device id
+        :type device_id: tuple
+        :return: document
+        '''
+        return  self._db.devices.delete_one(
+            {'id': device_id[0]}
+        )
 
 mongo_manager = MongoDBManager()
