@@ -18,26 +18,31 @@ class NetObject:
 
     def init_connection(self):
         self._server_socket.bind((self.address, self.port))
-        self._server_socket.listen()
 
     def run_listening(self):
-        message_handler = threading.Thread(target=self.receive_message, args=())
-        message_handler.start()
+        self._server_socket.listen(10)
+        threading.Thread(target=self.receive_message, args=()).start()
 
     def receive_message(self):
         while True:
             client_socket, client_address = self._server_socket.accept()
             print(client_address)
-            message = client_socket.recv(1024)
+            threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+                #print('id, position(x, y), value = {}'.format(unpack('>iiii', (message[0:16]))))
+                # text = request[16:]
+                # print('string = {}'.format(text.decode('utf-8')))
 
-            response = self.deserialize_message(message)
-            response_message = pack('>iii', response[0], response[1], response[2])
+    def handle_client(self, client_socket):
+        try:
+            while True:
+                message = client_socket.recv(1024)
 
-            client_socket.send(response_message)
-            #client_socket.close()
-            #print('id, position(x, y), value = {}'.format(unpack('>iiii', (message[0:16]))))
-            # text = request[16:]
-            # print('string = {}'.format(text.decode('utf-8')))
+                response = self.deserialize_message(message)
+                response_message = pack('>iii', response[0], response[1], response[2])
+
+                client_socket.send(response_message)
+        finally:
+            client_socket.close()
 
     def deserialize_message(self, message):
         message_id = unpack('>i', message[0:4])
