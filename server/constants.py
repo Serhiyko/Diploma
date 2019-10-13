@@ -7,6 +7,8 @@ class MessageType(Enum):
     CreateDevice = 3,
     DeleteDevice = 4,
     GetDevices = 5,
+    SetDateTimeEvent = 6,
+    GetDateTimeEvent = 7
 
 
 class ErrorCode(Enum):

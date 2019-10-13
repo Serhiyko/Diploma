@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import socket
 import threading
 
@@ -8,6 +10,7 @@ from server.constants import (
 )
 from struct import *
 from server.mongodb_manager import mongo_manager
+from server.datetimemanager import datetime_manager
 
 
 class NetObject:
@@ -26,25 +29,25 @@ class NetObject:
     def receive_message(self):
         while True:
             client_socket, client_address = self._server_socket.accept()
+            print(client_socket.getsockname())
+            print(client_socket.getpeername())
             print(client_address)
             threading.Thread(target=self.handle_client, args=(client_socket,)).start()
-                #print('id, position(x, y), value = {}'.format(unpack('>iiii', (message[0:16]))))
-                # text = request[16:]
-                # print('string = {}'.format(text.decode('utf-8')))
 
     def handle_client(self, client_socket):
         try:
             while True:
                 message = client_socket.recv(1024)
 
-                response = self.deserialize_message(message)
+                response = self.deserialize_message(message, client_socket)
                 response_message = pack('>iii', response[0], response[1], response[2])
 
                 client_socket.send(response_message)
         finally:
+            #TODO: remove client socket from datetime
             client_socket.close()
 
-    def deserialize_message(self, message):
+    def deserialize_message(self, message, client_socket):
         message_id = unpack('>i', message[0:4])
         response = ErrorCode.InvalidMessageType.value
 
@@ -78,6 +81,13 @@ class NetObject:
         elif message_id == MessageType.GetDevices.value:
             #TODO: return all devices
             pass
+        elif message_id == MessageType.SetDateTimeEvent.value:
+            device_metadata = self.get_datetime_event_data(message)
+            user_key = datetime_manager.get_user_id(client_socket)
+            device_metadata = device_metadata + (user_key,)
+
+            mongo_manager.insert_datetime_record(device_metadata)
+            response = (device_metadata[0],) + ErrorCode.Success.value
         else:
             response = ErrorCode.InvalidMessageType.value
 
@@ -102,3 +112,12 @@ class NetObject:
         value = unpack('>i', message[8:12])
 
         return device_id + value
+
+    def get_datetime_event_data(self, message):
+        device_id = unpack('>i', message[4:8])
+        value = unpack('>i', message[8:12])
+        byte_string = message[12:]
+        device_datetime = byte_string.decode('utf-8')
+        device_datetime = datetime.strptime(device_datetime, '%d.%m.%YT%H:%M:%S')
+
+        return device_id[0], value[0], device_datetime
