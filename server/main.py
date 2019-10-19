@@ -1,11 +1,11 @@
 from server.net_object import NetObject
+from server.datetime_manager import datetime_manager
 
 
 if __name__ == "__main__":
-    # #b'\x00\x02'
-    # var = 2
-    # print(str(var).encode('utf-8'))
     net_object = NetObject()
 
     net_object.init_connection()
     net_object.run_listening()
+
+    datetime_manager.init_datetime_update_process()

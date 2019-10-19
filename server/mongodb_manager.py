@@ -14,7 +14,7 @@ class MongoDBManager():
     def create_new_device(self, device_metadata):
         '''
         create new device
-        :param device_metadata: (type, id, value, location_id, position_x, position_y)
+        :param device_metadata: (type, id, user_id, location_id, position_x, position_y)
         :type device_metadata: tuple
         :return: ObjectId
         '''
@@ -22,36 +22,43 @@ class MongoDBManager():
             {
                 'type': device_metadata[0],
                 'id': device_metadata[1],
+                'user_id': device_metadata[2],
                 'value': 0,
-                'location_id': device_metadata[2],
-                'position_x': device_metadata[3],
-                'position_y': device_metadata[4]
+                'location_id': device_metadata[3],
+                'position_x': device_metadata[4],
+                'position_y': device_metadata[5]
             }
         )
 
     def update_device_value_status(self, device_metadata):
         '''
         update value for some device
-        :param device_metadata: device_metadata = (id, value)
+        :param device_metadata: device_metadata = (id, user_id, value)
         :type device_metadata: tuple
         :return: document
         '''
         return self._db.devices.update_one(
-            {'id': device_metadata[0]},
+            {'$and': [
+                {'id': device_metadata[0]},
+                {'user_id': device_metadata[1]}
+            ]},
             {
-                '$set': {'value': device_metadata[1]}
+                '$set': {'value': device_metadata[2]}
             }
         )
 
-    def delete_device(self, device_id):
+    def delete_device(self, device_metadata):
         '''
         delete device
-        :param device_id: device id
-        :type device_id: tuple
+        :param device_metadata: device id, user id
+        :type device_metadata: tuple
         :return: document
         '''
         return self._db.devices.delete_one(
-            {'id': device_id[0]}
+            {'$and': [
+                {'id': device_metadata[0]},
+                {'user_id': device_metadata[1]}
+            ]}
         )
 
     def insert_datetime_record(self, device_metadata):
@@ -61,13 +68,16 @@ class MongoDBManager():
         :return: document
         '''
         return self._db.datetime_requests.update_one(
-            {'id': device_metadata[0]},
+            {'$and': [
+                {'id': device_metadata[0]},
+                {'user_id': device_metadata[3]}
+            ]},
             {
                 '$set': {
                     'id': device_metadata[0],
                     'value': device_metadata[1],
                     'datetime': device_metadata[2],
-                    'user_key': device_metadata[3]
+                    'user_id': device_metadata[3]
                 }
             }, upsert=True
         )
@@ -78,17 +88,34 @@ class MongoDBManager():
         '''
         limit_datetime = current_datetime + timedelta(days=1)
 
-        return self._db.datetime_requests.find({
+        responce = self._db.datetime_requests.find({
             '$and': [
                 {'datetime': {'$gte': current_datetime}},
                 {'datetime': {'$lt': limit_datetime}}
             ]
         })
 
-        # for el in records:
-        #     print(el)
-        #
-        # return records
+        return [document for document in responce]
+
+    def update_device_positions(self, device_metadata):
+        '''
+        update device_metadata
+        :param device_metadata: (device_id, user_id, position_x, position_y)
+        :return: document
+        '''
+
+        return self._db.devices.update_one(
+            {'$and': [
+                {'id': device_metadata[0]},
+                {'user_id': device_metadata[1]}
+            ]},
+            {
+                '$set': {
+                    'position_x': device_metadata[2],
+                    'position_y': device_metadata[3]
+                }
+            }
+        )
 
 
 mongo_manager = MongoDBManager()

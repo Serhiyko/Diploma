@@ -8,13 +8,15 @@ class MessageType(Enum):
     DeleteDevice = 4,
     GetDevices = 5,
     SetDateTimeEvent = 6,
-    GetDateTimeEvent = 7
+    GetDateTimeEvent = 7,
+    SendUserID = 8,
 
 
 class ErrorCode(Enum):
     Success = 1,
     InvalidMessageType = -1,
     InvalidDeviceParameters = -2,
+    InvalidUserId = -3,
 
 
 devices = {
