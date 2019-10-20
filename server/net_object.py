@@ -69,6 +69,7 @@ class NetObject:
             device_metadata = self.get_device_position_metadata(message)
             mongo_manager.update_device_positions(device_metadata)
             response = (device_metadata[0],) + ErrorCode.Success.value
+            print('update device position: {}'.format(device_metadata[0]))
         elif message_id == MessageType.DeleteDevice.value:
             device_id = unpack('>i', message[4:8])
             user_id = unpack('>i', message[8:12])
@@ -96,6 +97,7 @@ class NetObject:
             mongo_manager.insert_datetime_record(device_metadata)
             datetime_manager.add_new_event(device_metadata)
             response = (device_metadata[0],) + ErrorCode.Success.value
+            print('date time is created: {}'.format(device_metadata[0]))
         else:
             response = ErrorCode.InvalidMessageType.value
 
