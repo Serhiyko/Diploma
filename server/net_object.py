@@ -17,9 +17,10 @@ class NetObject:
     def __init__(self):
         self.address = '127.0.0.1'
         self.port = 1234
-        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server_socket = None
 
     def init_connection(self):
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.bind((self.address, self.port))
 
     def run_listening(self):

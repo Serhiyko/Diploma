@@ -52,14 +52,22 @@ class MongoDBManager():
         delete device
         :param device_metadata: device id, user id
         :type device_metadata: tuple
-        :return: document
+        :return: None
         '''
-        return self._db.devices.delete_one(
+        self._db.devices.delete_one(
             {'$and': [
                 {'id': device_metadata[0]},
                 {'user_id': device_metadata[1]}
             ]}
         )
+
+        self._db.datetime_requests.delete_one(
+            {'$and': [
+                {'id': device_metadata[0]},
+                {'user_id': device_metadata[1]}
+            ]}
+        )
+
 
     def insert_datetime_record(self, device_metadata):
         '''
