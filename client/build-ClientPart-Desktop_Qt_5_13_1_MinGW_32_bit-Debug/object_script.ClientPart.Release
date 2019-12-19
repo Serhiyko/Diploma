@@ -1,0 +1,16 @@
+release/main.o
+release/mainwindow.o
+release/client.o
+release/device.o
+release/complexdevice.o
+release/simpledevice.o
+release/model.o
+release/propertiesframe.o
+release/propertieswindow.o
+release/devicefactory.o
+release/house.o
+release/moc_mainwindow.o
+release/moc_client.o
+release/moc_model.o
+release/moc_propertiesframe.o
+release/moc_propertieswindow.o

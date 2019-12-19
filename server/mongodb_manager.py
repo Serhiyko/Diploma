@@ -68,7 +68,6 @@ class MongoDBManager():
             ]}
         )
 
-
     def insert_datetime_record(self, device_metadata):
         '''
         insert datetime record for device

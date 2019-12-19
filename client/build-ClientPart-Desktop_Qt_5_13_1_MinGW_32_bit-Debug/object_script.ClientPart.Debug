@@ -1,0 +1,16 @@
+debug/main.o
+debug/mainwindow.o
+debug/client.o
+debug/device.o
+debug/complexdevice.o
+debug/simpledevice.o
+debug/model.o
+debug/propertiesframe.o
+debug/propertieswindow.o
+debug/devicefactory.o
+debug/house.o
+debug/moc_mainwindow.o
+debug/moc_client.o
+debug/moc_model.o
+debug/moc_propertiesframe.o
+debug/moc_propertieswindow.o

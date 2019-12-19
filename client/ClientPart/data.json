@@ -1,0 +1,26 @@
+[
+    {
+        "device_type": 0,
+        "id": 4,
+        "locationId": 0,
+        "positionX": 90,
+        "positionY": 25,
+        "turnOn": true
+    },
+    {
+        "device_type": 1,
+        "id": 5,
+        "locationId": 0,
+        "positionX": 132,
+        "positionY": 202,
+        "value": 0
+    },
+    {
+        "device_type": 5,
+        "id": 3,
+        "locationId": 0,
+        "positionX": 500,
+        "positionY": 200,
+        "value": 0
+    }
+]
